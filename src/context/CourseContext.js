@@ -6,6 +6,8 @@ const courseReducer = (state, action) => {
  switch(action.type){
     case 'get_courses':
         return action.payload;
+    case 'enroll':
+        return state;
     default:
         return state;
  }
@@ -16,7 +18,6 @@ const enroll = dispatch => ({ id, displayName }) => {
     .collection('students').add({
         name: displayName
     }).then(() =>{
-        RootNavigation.navigate('Detail');
     })
     .catch(error =>{
         console.log(error.message);

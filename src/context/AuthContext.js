@@ -1,5 +1,5 @@
 import createDataContext from "./createDataContext";
-import { auth } from '../firebase/fire';
+import { auth, db } from '../firebase/fire';
 import * as RootNavigation from '../RootNavigation';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -34,7 +34,6 @@ const addUsername = dispatch => ({firstName, lastName}) => {
         var jsonUser = JSON.stringify(user);
         await AsyncStorage.setItem('user', jsonUser);
         dispatch({ type: 'signin', payload: user });
-        RootNavigation.navigate('Main');
       }).catch((error) => {
         console.log(error.message);
       });  
@@ -96,8 +95,28 @@ const signout = (dispatch) => async () => {
   })
 };
 
+const saveUserToFireStore = (dispatch) => async () => {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      var currentUser = auth.currentUser;
+      console.log(currentUser);
+      db.collection('users').doc(currentUser.uid).set({
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoUrl: currentUser.photoURL
+      }).then(() =>{
+        console.log("user saved")
+        RootNavigation.navigate('Main');
+      })
+      .catch(error =>{
+          console.log(error.message);
+      });
+    }
+  });
+};
+
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername },
+  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername, saveUserToFireStore },
   { errorMessage: "", user: null }
 );

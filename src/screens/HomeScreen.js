@@ -3,22 +3,13 @@ import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-elements';
 import { Context as CourseContext } from '../context/CourseContext';
 import { Feather } from '@expo/vector-icons'; 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const getDisplayName = async () => {
-    
-    let response = await AsyncStorage.getItem('user').displayName;
-    return response;
-}
 
 const HomeScreen = ({ navigation }) => {
-    const { state, getCourses, enroll } = useContext(CourseContext);
-    var displayName = getDisplayName();
+    const { state, getCourses } = useContext(CourseContext);
     useEffect(()=> {
         navigation.addListener('focus', () => {
             getCourses();
         });
-
     }, []);
     
 

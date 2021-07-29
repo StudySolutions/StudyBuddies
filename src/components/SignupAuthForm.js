@@ -9,7 +9,7 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const { addUsername } = useContext(AuthContext);
+    const { addUsername, saveUserToFireStore } = useContext(AuthContext);
 
     return (
         <>
@@ -53,6 +53,7 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
             <Button title={submitButtonText} onPress={() => {
                 onSubmit({ email, password, firstName, lastName });
                 addUsername({ firstName, lastName });
+                saveUserToFireStore();
                 }}/>
             </Spacer>
         </>
