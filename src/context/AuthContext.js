@@ -56,13 +56,49 @@ const tryLocalSignin = dispatch => async () => {
   }
 };
 
-const signup = (dispatch) => async ({ email, password }) => {
+const signup = (dispatch) => async ({ email, password, reTypePassword }) => {
+  //var regExNumber = new RegExp('/[0-9]') // uppercase letter
+  var regExUpper = new RegExp('/[A-Z]') // uppercase letter
+  var regExLower = new RegExp('/[a-z]') // lowercase letter
+  /*if (!regExNumber.test(password)) {
+    var errorMessage = "Password must include a number";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }; */
+  console.log("Password: " + password);
+  console.log("retype: " + reTypePassword);
+  if (password !== reTypePassword) {
+    var errorMessage = "Passwords must match";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }
+  
+  const validPassword = new RegExp('^(?=.*?[A-Za-z])(?=.*?[0-9]).{6,}$');
+  
+  if (!validPassword.test(password)) {
+    var errorMessage = "Passwords must include a number, capital letter, and lowercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }
+  /*
+  if (!regExUpper.test(password)) {
+    var errorMessage = "Password must include an uppercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  };
+  if (!regExLower.test(password)) {
+    var errorMessage = "Password must include a lowercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }; */
+
   auth.createUserWithEmailAndPassword(email, password)
     .then( async (userCredential) => {
     })
     .catch( error => {
       var errorMessage = error.message;
       dispatch({ type: 'add_error', payload: errorMessage});
+      console.log("HERE")
       console.log(errorMessage)
     });
 };

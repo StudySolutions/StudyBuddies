@@ -7,6 +7,7 @@ import { Context as AuthContext } from '../context/AuthContext';
 const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [reTypePassword, setReTypePassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const { addUsername, saveUserToFireStore } = useContext(AuthContext);
@@ -46,12 +47,21 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
             autoCapitalize="none"
             autoCorrect={false}
             />
+            <Spacer />
+            <Input
+            secureTextEntry
+            label="Validate Password"
+            value={reTypePassword}
+            onChangeText={setReTypePassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            />
             {errorMessage ? (
             <Text style={styles.errorMessage}>{errorMessage}</Text>
             ) : null}
             <Spacer>
             <Button title={submitButtonText} onPress={() => {
-                onSubmit({ email, password, firstName, lastName });
+                onSubmit({ email, password, reTypePassword, firstName, lastName });
                 addUsername({ firstName, lastName });
                 saveUserToFireStore();
                 }}/>
