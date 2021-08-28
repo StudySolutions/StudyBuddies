@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Text, Button, Input } from 'react-native-elements';
 import Spacer from './Spacer';
 import { Context as AuthContext } from '../context/AuthContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }) => {
     const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
     const { addUsername, saveUserToFireStore } = useContext(AuthContext);
 
     return (
-        <>
+        <SafeAreaView>
             <Spacer>
             <Text h3>{headerText}</Text>
             </Spacer>
@@ -50,13 +51,30 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
             <Text style={styles.errorMessage}>{errorMessage}</Text>
             ) : null}
             <Spacer>
+<<<<<<< Updated upstream
             <Button title={submitButtonText} onPress={() => {
+<<<<<<< Updated upstream
                 onSubmit({ email, password, firstName, lastName });
+=======
+                onSubmit({ email, password, reTypePassword, firstName, lastName });
+=======
+            <TouchableOpacity onPress={()=> {
+               onSubmit({ email, password, firstName, lastName });
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                 addUsername({ firstName, lastName });
-                saveUserToFireStore();
-                }}/>
+            }}>
+                <LinearGradient 
+                    colors={['#c0392b', '#f1c40f']}
+                    start={{x: 0, y: 0.5}}
+                    end={{x:1, y:1}}
+                    style={styles.button}>
+                    
+                        <Text style={styles.bottomText}>Sign Up</Text>
+                </LinearGradient>
+            </TouchableOpacity>
             </Spacer>
-        </>
+        </SafeAreaView>
     );
 };
 
@@ -66,6 +84,17 @@ const styles = StyleSheet.create({
         color: 'red',
         marginLeft: 15,
         marginTop: 15,
+      },
+      button:{
+        marginTop: 50,
+        paddingVertical: 10,
+        paddingHorizontal: 40,
+        borderRadius: 10
+      },
+      bottomText:{
+          textAlign: 'center',
+          fontSize: 24,
+          color: '#fff'
       }
 });
 

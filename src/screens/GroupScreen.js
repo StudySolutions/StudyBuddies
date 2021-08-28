@@ -1,24 +1,24 @@
-import React, { useContext, useEffect } from 'react';
-import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useContext } from 'react';
+import { View, SafeAreaView, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-elements';
-import { Context as CourseContext } from '../context/CourseContext';
-import { Feather } from '@expo/vector-icons'; 
+import { Context as GroupContext } from '../context/GroupContext';
 
-const HomeScreen = ({ navigation }) => {
-    const { state, getCourses } = useContext(CourseContext);
+
+const GroupScreen = ({ navigation }) => {
+    const { state, getGroups } = useContext(GroupContext);
     useEffect(()=> {
         navigation.addListener('focus', () => {
-            getCourses();
+            getGroups();
         });
     }, []);
     
 
     return (
-        <View style={styles.container}>
-            <Text h2>Course List</Text>
+        <SafeAreaView style={styles.container}>
+            <Text h2>Group List</Text>
             <FlatList 
                 data={state}
-                keyExtractor={course => course.name}
+                keyExtractor={group => group.name}
                 renderItem={({ item }) => {
                     return(
                         <View style={styles.row}>
@@ -29,15 +29,15 @@ const HomeScreen = ({ navigation }) => {
                                     id: item.id
                                 }
                                 )}}>
-                                <Text h4>{item.type}{item.code} - {item.name}</Text>
+                                <Text h4>{item.course} - {item.name}</Text>
                             </TouchableOpacity>
                         </View>
                     );
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -49,6 +49,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'grey'
     }
-})
+});
 
-export default HomeScreen;
+export default GroupScreen;

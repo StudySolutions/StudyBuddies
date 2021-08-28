@@ -29,11 +29,26 @@ const addUsername = dispatch => ({firstName, lastName}) => {
       // https://firebase.google.com/docs/reference/js/firebase.User
       var displayName = firstName + " " + lastName;
       user.updateProfile({
-        displayName: displayName
+        displayName: displayName,
+        photoURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1280px-User-avatar.svg.png"
       }).then(async () => {
         var jsonUser = JSON.stringify(user);
         await AsyncStorage.setItem('user', jsonUser);
         dispatch({ type: 'signin', payload: user });
+        console.log('adding user')
+        var currentUser = auth.currentUser;
+        console.log(currentUser);
+        db.collection('users').doc(currentUser.uid).set({
+            name: currentUser.displayName,
+            email: currentUser.email,
+            photoUrl: currentUser.photoURL
+        }).then(() =>{
+          console.log("user saved")
+          RootNavigation.navigate('Main', { screen: 'Course'});
+        })
+        .catch(error =>{
+            console.log(error.message);
+        });
       }).catch((error) => {
         console.log(error.message);
       });  
@@ -46,7 +61,7 @@ const tryLocalSignin = dispatch => async () => {
     const jsonUser = await AsyncStorage.getItem('user');
     var user = JSON.parse(jsonUser);
     if(user !== null) {
-      RootNavigation.navigate('Main');
+      RootNavigation.navigate('Main', { screen: 'Course'});
     }
     else {
       RootNavigation.navigate('Signup');
@@ -95,28 +110,8 @@ const signout = (dispatch) => async () => {
   })
 };
 
-const saveUserToFireStore = (dispatch) => async () => {
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      var currentUser = auth.currentUser;
-      console.log(currentUser);
-      db.collection('users').doc(currentUser.uid).set({
-          name: currentUser.displayName,
-          email: currentUser.email,
-          photoUrl: currentUser.photoURL
-      }).then(() =>{
-        console.log("user saved")
-        RootNavigation.navigate('Main');
-      })
-      .catch(error =>{
-          console.log(error.message);
-      });
-    }
-  });
-};
-
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername, saveUserToFireStore },
+  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername },
   { errorMessage: "", user: null }
 );
