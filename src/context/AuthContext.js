@@ -29,26 +29,11 @@ const addUsername = dispatch => ({firstName, lastName}) => {
       // https://firebase.google.com/docs/reference/js/firebase.User
       var displayName = firstName + " " + lastName;
       user.updateProfile({
-        displayName: displayName,
-        photoURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1280px-User-avatar.svg.png"
+        displayName: displayName
       }).then(async () => {
         var jsonUser = JSON.stringify(user);
         await AsyncStorage.setItem('user', jsonUser);
         dispatch({ type: 'signin', payload: user });
-        console.log('adding user')
-        var currentUser = auth.currentUser;
-        console.log(currentUser);
-        db.collection('users').doc(currentUser.uid).set({
-            name: currentUser.displayName,
-            email: currentUser.email,
-            photoUrl: currentUser.photoURL
-        }).then(() =>{
-          console.log("user saved")
-          RootNavigation.navigate('Main', { screen: 'Course'});
-        })
-        .catch(error =>{
-            console.log(error.message);
-        });
       }).catch((error) => {
         console.log(error.message);
       });  
@@ -61,7 +46,7 @@ const tryLocalSignin = dispatch => async () => {
     const jsonUser = await AsyncStorage.getItem('user');
     var user = JSON.parse(jsonUser);
     if(user !== null) {
-      RootNavigation.navigate('Main', { screen: 'Course'});
+      RootNavigation.navigate('Main');
     }
     else {
       RootNavigation.navigate('Signup');
@@ -71,13 +56,49 @@ const tryLocalSignin = dispatch => async () => {
   }
 };
 
-const signup = (dispatch) => async ({ email, password }) => {
+const signup = (dispatch) => async ({ email, password, reTypePassword }) => {
+  //var regExNumber = new RegExp('/[0-9]') // uppercase letter
+  var regExUpper = new RegExp('/[A-Z]') // uppercase letter
+  var regExLower = new RegExp('/[a-z]') // lowercase letter
+  /*if (!regExNumber.test(password)) {
+    var errorMessage = "Password must include a number";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }; */
+  console.log("Password: " + password);
+  console.log("retype: " + reTypePassword);
+  if (password !== reTypePassword) {
+    var errorMessage = "Passwords must match";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }
+  
+  const validPassword = new RegExp('^(?=.*?[A-Za-z])(?=.*?[0-9]).{6,}$');
+  
+  if (!validPassword.test(password)) {
+    var errorMessage = "Passwords must include a number, capital letter, and lowercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }
+  /*
+  if (!regExUpper.test(password)) {
+    var errorMessage = "Password must include an uppercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  };
+  if (!regExLower.test(password)) {
+    var errorMessage = "Password must include a lowercase letter";
+    dispatch({ type: 'add_error', payload: errorMessage});
+    return;
+  }; */
+
   auth.createUserWithEmailAndPassword(email, password)
     .then( async (userCredential) => {
     })
     .catch( error => {
       var errorMessage = error.message;
       dispatch({ type: 'add_error', payload: errorMessage});
+      console.log("HERE")
       console.log(errorMessage)
     });
 };
@@ -110,8 +131,28 @@ const signout = (dispatch) => async () => {
   })
 };
 
+const saveUserToFireStore = (dispatch) => async () => {
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      var currentUser = auth.currentUser;
+      console.log(currentUser);
+      db.collection('users').doc(currentUser.uid).set({
+          name: currentUser.displayName,
+          email: currentUser.email,
+          photoUrl: currentUser.photoURL
+      }).then(() =>{
+        console.log("user saved")
+        RootNavigation.navigate('Main');
+      })
+      .catch(error =>{
+          console.log(error.message);
+      });
+    }
+  });
+};
+
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername },
+  { signin, signout, signup, clearErrorMessage, tryLocalSignin, addUsername, saveUserToFireStore },
   { errorMessage: "", user: null }
 );

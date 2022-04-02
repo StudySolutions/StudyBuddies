@@ -8,12 +8,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [reTypePassword, setReTypePassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const { addUsername, saveUserToFireStore } = useContext(AuthContext);
 
     return (
         <SafeAreaView>
+            <Spacer></Spacer>
             <Spacer>
             <Text h3>{headerText}</Text>
             </Spacer>
@@ -47,7 +49,16 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
             autoCapitalize="none"
             autoCorrect={false}
             />
-             {errorMessage ? (
+            <Spacer />
+            <Input
+            secureTextEntry
+            label="Validate Password"
+            value={reTypePassword}
+            onChangeText={setReTypePassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            />
+            {errorMessage ? (
             <Text style={styles.errorMessage}>{errorMessage}</Text>
             ) : null}
             <Spacer>
@@ -56,6 +67,20 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
                 addUsername({ firstName, lastName });
                 saveUserToFireStore();
                 }}/>
+            
+            <TouchableOpacity onPress={()=> {
+                onSubmit({ email, password, reTypePassword, firstName, lastName });
+                addUsername({ firstName, lastName });
+            }}>
+                <LinearGradient 
+                    colors={['#c0392b', '#f1c40f']}
+                    start={{x: 0, y: 0.5}}
+                    end={{x:1, y:1}}
+                    style={styles.button}>
+                    
+                        <Text style={styles.bottomText}>Sign Up</Text>
+                </LinearGradient>
+            </TouchableOpacity>
             </Spacer>
         </SafeAreaView>
     );
@@ -67,17 +92,6 @@ const styles = StyleSheet.create({
         color: 'red',
         marginLeft: 15,
         marginTop: 15,
-      },
-      button:{
-        marginTop: 50,
-        paddingVertical: 10,
-        paddingHorizontal: 40,
-        borderRadius: 10
-      },
-      bottomText:{
-          textAlign: 'center',
-          fontSize: 24,
-          color: '#fff'
       }
 });
 
