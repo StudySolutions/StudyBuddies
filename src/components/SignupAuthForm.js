@@ -47,32 +47,15 @@ const SignupAuthForm = ({ headerText, errorMessage, onSubmit, submitButtonText }
             autoCapitalize="none"
             autoCorrect={false}
             />
-            {errorMessage ? (
+             {errorMessage ? (
             <Text style={styles.errorMessage}>{errorMessage}</Text>
             ) : null}
             <Spacer>
-<<<<<<< Updated upstream
             <Button title={submitButtonText} onPress={() => {
-<<<<<<< Updated upstream
-                onSubmit({ email, password, firstName, lastName });
-=======
                 onSubmit({ email, password, reTypePassword, firstName, lastName });
-=======
-            <TouchableOpacity onPress={()=> {
-               onSubmit({ email, password, firstName, lastName });
->>>>>>> Stashed changes
->>>>>>> Stashed changes
                 addUsername({ firstName, lastName });
-            }}>
-                <LinearGradient 
-                    colors={['#c0392b', '#f1c40f']}
-                    start={{x: 0, y: 0.5}}
-                    end={{x:1, y:1}}
-                    style={styles.button}>
-                    
-                        <Text style={styles.bottomText}>Sign Up</Text>
-                </LinearGradient>
-            </TouchableOpacity>
+                saveUserToFireStore();
+                }}/>
             </Spacer>
         </SafeAreaView>
     );
